@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Records Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Health Records Management</h1>
+
+    <div>
+        <h2>Add Record</h2>
+        <input type="text" id="addPatientName" placeholder="Patient Name">
+        <input type="text" id="addDiagnosis" placeholder="Diagnosis">
+        <input type="number" id="addAge" placeholder="Age">
+        <input type="text" id="addGender" placeholder="Gender">
+        <input type="text" id="addStaffId" placeholder="Staff ID">
+        <button onclick="addRecord()">Add Record</button>
+    </div>
+
+    <div>
+        <h2>Retrieve Record</h2>
+        <input type="text" id="retrievePatientName" placeholder="Patient Name">
+        <input type="text" id="retrieveStaffId" placeholder="Staff ID">
+        <button onclick="getRecord()">Get Record</button>
+        <div id="recordDetails"></div>
+    </div>
+
+    <div>
+        <h2>Delete Record</h2>
+        <input type="text" id="deletePatientName" placeholder="Patient Name">
+        <input type="text" id="deleteStaffId" placeholder="Staff ID">
+        <button onclick="deleteRecord()">Delete Record</button>
+    </div>
+
+    <script src="web3.min.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
