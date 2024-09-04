@@ -1,7 +1,5 @@
-const HealthRecords = artifacts.require("HealthRecords");
+const HealthDataManagement = artifacts.require("HealthDataManagement");
 
-module.exports = async function (deployer) {
-    await deployer.deploy(HealthRecords);
-    const instance = await HealthRecords.deployed();
-    console.log("HealthRecords deployed at address:", instance.address);
+module.exports = function (deployer) {
+  deployer.deploy(HealthDataManagement);
 };
