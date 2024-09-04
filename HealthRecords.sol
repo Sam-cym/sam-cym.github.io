@@ -1,70 +1,50 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.21;
 
-contract HealthRecords {
-    // Structure to store patient records
-    struct PatientRecord {
+contract HealthDataManagement {
+    struct Patient {
         string name;
-        string diagnosis;
         uint age;
         string gender;
+        string diagnosis;
     }
 
-    // Mapping to store patient records
-    mapping(string => PatientRecord) private records;
+    mapping(string => Patient) private patients;
+    mapping(address => bool) private authorizedIDs;
 
-    // Mapping to track authorized staff
-    mapping(string => bool) private authorizedStaff;
-
-    // Define staff IDs
-    string private constant STAFF_ID_RIHANNA_ASAP = "RihannaAsap";
-    string private constant STAFF_ID_BROWN_SKIN = "BrownSkin";
-    string private constant STAFF_ID_COOL_APACHE = "CoolApache";
-    string private constant STAFF_ID_RED_ROSES = "RedRoses";
-
+    // Constructor to initialize authorized addresses
     constructor() {
-        // Initialize with authorized staff IDs
-        authorizedStaff[STAFF_ID_RIHANNA_ASAP] = true;
-        authorizedStaff[STAFF_ID_BROWN_SKIN] = true;
-        authorizedStaff[STAFF_ID_COOL_APACHE] = true;
-        authorizedStaff[STAFF_ID_RED_ROSES] = true;
+        authorizedIDs [0x31cDdd213C4c8B57713608A28DcC0fc718A4b839] = true; // Metamask address
+        
+     
     }
 
-    // Modifier to check if caller is authorized
-    modifier onlyAuthorized(string memory staffId) {
-        require(authorizedStaff[staffId], "Not authorized");
+    // Modifier to check if the sender is authorized
+    modifier onlyAuthorized() {
+        require(authorizedIDs[msg.sender], "Unauthorized access");
         _;
     }
 
-    // Function to add a new patient record
-    function addRecord(
-        string memory patientName,
-        string memory diagnosis,
-        uint age,
-        string memory gender,
-        string memory staffId
-    ) public onlyAuthorized(staffId) {
-        records[patientName] = PatientRecord(
-            patientName,
-            diagnosis,
-            age,
-            gender
-        );
+    // Add a new patient record
+    function addPatient(string memory name, uint age, string memory gender, string memory diagnosis) public onlyAuthorized {
+        patients[name] = Patient(name, age, gender, diagnosis);
     }
 
-    // Function to retrieve a patient record
-    function getRecord(
-        string memory patientName,
-        string memory staffId
-    ) public view onlyAuthorized(staffId) returns (PatientRecord memory) {
-        return records[patientName];
+    // Retrieve a patient record
+    function getPatient(string memory name) public view returns (string memory, uint, string memory, string memory) {
+        Patient memory patient = patients[name];
+        return (patient.name, patient.age, patient.gender, patient.diagnosis);
     }
 
-    // Function to delete a patient record
-    function deleteRecord(
-        string memory patientName,
-        string memory staffId
-    ) public onlyAuthorized(staffId) {
-        delete records[patientName];
+    // Update a patient record
+    function updatePatient(string memory name, uint age, string memory gender, string memory diagnosis) public onlyAuthorized {
+        require(bytes(patients[name].name).length != 0, "Patient record does not exist");
+        patients[name] = Patient(name, age, gender, diagnosis);
+    }
+
+    // Delete a patient record
+    function deletePatient(string memory name) public onlyAuthorized {
+        require(bytes(patients[name].name).length != 0, "Patient record does not exist");
+        delete patients[name];
     }
 }
