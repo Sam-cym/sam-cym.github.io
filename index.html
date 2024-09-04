@@ -1,43 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Records Management</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Health Data Management</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.10.0/dist/web3.min.js"></script>
 </head>
-
 <body>
-    <h1>Health Records Management</h1>
+    <h1>Health Data Management</h1>
 
-    <div>
-        <h2>Add Record</h2>
-        <input type="text" id="addPatientName" placeholder="Patient Name">
-        <input type="text" id="addDiagnosis" placeholder="Diagnosis">
-        <input type="number" id="addAge" placeholder="Age">
-        <input type="text" id="addGender" placeholder="Gender">
-        <input type="text" id="addStaffId" placeholder="Staff ID">
-        <button onclick="addRecord()">Add Record</button>
-    </div>
+    <h2>Add Patient</h2>
+    <input type="text" id="addName" placeholder="Name" />
+    <input type="number" id="addAge" placeholder="Age" />
+    <input type="text" id="addGender" placeholder="Gender" />
+    <input type="text" id="addDiagnosis" placeholder="Diagnosis" />
+    <button onclick="addPatient()">Add Patient</button>
 
-    <div>
-        <h2>Retrieve Record</h2>
-        <input type="text" id="retrievePatientName" placeholder="Patient Name">
-        <input type="text" id="retrieveStaffId" placeholder="Staff ID">
-        <button onclick="getRecord()">Get Record</button>
-        <div id="recordDetails"></div>
-    </div>
+    <h2>Get Patient</h2>
+    <input type="text" id="getName" placeholder="Name" />
+    <button onclick="getPatient()">Get Patient</button>
+    <p id="patientData"></p>
 
-    <div>
-        <h2>Delete Record</h2>
-        <input type="text" id="deletePatientName" placeholder="Patient Name">
-        <input type="text" id="deleteStaffId" placeholder="Staff ID">
-        <button onclick="deleteRecord()">Delete Record</button>
-    </div>
+    <h2>Update Patient</h2>
+    <input type="text" id="updateName" placeholder="Name" />
+    <input type="number" id="updateAge" placeholder="Age" />
+    <input type="text" id="updateGender" placeholder="Gender" />
+    <input type="text" id="updateDiagnosis" placeholder="Diagnosis" />
+    <button onclick="updatePatient()">Update Patient</button>
 
-    <script src="web3.min.js"></script>
-    <script src="app.js"></script>
+    <h2>Delete Patient</h2>
+    <input type="text" id="deleteName" placeholder="Name" />
+    <button onclick="deletePatient()">Delete Patient</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function () {
+            if (window.ethereum) {
+                const web3 = new Web3(window.ethereum);
+                await window.ethereum.enable(); // Request user permission to access MetaMask
+
+                const contractAddress = '0x31cDdd213C4c8B57713608A28DcC0fc718A4b839'; // Replace with your contract address
+                const contractABI = [ [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "age",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "gender",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "diagnosis",
+          "type": "string"
+        }
+      ],
+      "name": "addPatient",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getPatient",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "age",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "gender",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "diagnosis",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "age",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "gender",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "diagnosis",
+          "type": "string"
+        }
+      ],
+      "name": "updatePatient",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "id",
+          "type": "bytes32"
+        }
+      ],
+      "name": "deletePatient",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ], ]; // contract ABI
+
+                const contract = new web3.eth.Contract(contractABI, contractAddress);
+
+                async function addPatient() {
+                    try {
+                        const name = document.getElementById('addName').value;
+                        const age = document.getElementById('addAge').value;
+                        const gender = document.getElementById('addGender').value;
+                        const diagnosis = document.getElementById('addDiagnosis').value;
+
+                        const accounts = await web3.eth.getAccounts();
+                        await contract.methods.addPatient(name, age, gender, diagnosis).send({ from: accounts[0] });
+                        alert('Patient added successfully!');
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error: ' + error.message);
+                    }
+                }
+
+                async function getPatient() {
+                    try {
+                        const name = document.getElementById('getName').value;
+                        const patient = await contract.methods.getPatient(name).call();
+                        document.getElementById('patientData').innerText = `Name: ${patient[0]}, Age: ${patient[1]}, Gender: ${patient[2]}, Diagnosis: ${patient[3]}`;
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error: ' + error.message);
+                    }
+                }
+
+                async function updatePatient() {
+                    try {
+                        const name = document.getElementById('updateName').value;
+                        const age = document.getElementById('updateAge').value;
+                        const gender = document.getElementById('updateGender').value;
+                        const diagnosis = document.getElementById('updateDiagnosis').value;
+
+                        const accounts = await web3.eth.getAccounts();
+                        await contract.methods.updatePatient(name, age, gender, diagnosis).send({ from: accounts[0] });
+                        alert('Patient updated successfully!');
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error: ' + error.message);
+                    }
+                }
+
+                async function deletePatient() {
+                    try {
+                        const name = document.getElementById('deleteName').value;
+
+                        const accounts = await web3.eth.getAccounts();
+                        await contract.methods.deletePatient(name).send({ from: accounts[0] });
+                        alert('Patient deleted successfully!');
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error: ' + error.message);
+                    }
+                }
+
+                window.addPatient = addPatient;
+                window.getPatient = getPatient;
+                window.updatePatient = updatePatient;
+                window.deletePatient = deletePatient;
+            } else {
+                alert('Please install MetaMask!');
+            }
+        });
+    </script>
 </body>
-
 </html>
