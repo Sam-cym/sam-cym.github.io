@@ -139,7 +139,6 @@ module.exports = {
   //   }
   // }
 };
-
 const HDWalletProvider = require('@truffle/hdwallet-provider');
 
 const privateKey = 'find aisle wine clay strike they coconut inherit check proof alcohol funny';
@@ -148,9 +147,7 @@ const infuraProjectId = '531b493096ef4dc88ce862497fe5697a';
 module.exports = {
   networks: {
     sepolia: {
-      provider: () => new HDWalletProvider(privateKey, `https://sepolia.infura.io/v3/${infuraProjectId}`),
-      network_id: 11155111,       // Sepolia network ID
-   
+      provider: () => new HDWalletProvider(privateKey, 'https://sepolia.infura.io/v3/${531b493096ef4dc88ce862497fe5697a}' ),
       network_id: 11155111, // Sepolia's network ID
       gas: 5500000, // Gas limit
       confirmations: 2, // # of confirmations to wait between deployments. (default: 0)
